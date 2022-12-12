@@ -1,7 +1,8 @@
 # json-bigint
 
-[![Build Status](https://secure.travis-ci.org/sidorares/json-bigint.png)](http://travis-ci.org/sidorares/json-bigint)
-[![NPM](https://nodei.co/npm/json-bigint.png?downloads=true&stars=true)](https://nodei.co/npm/json-bigint/)
+This is a fork of [json-bigint](https://github.com/sidorares/json-bigint).
+
+The difference is that it does not make any assumptions and always parse all numbers as `BigNumber`s.
 
 JSON.parse/stringify with bigints support. Based on Douglas Crockford [JSON.js](https://github.com/douglascrockford/JSON-js) package and [bignumber.js](https://github.com/MikeMcl/bignumber.js) library.
 
@@ -90,110 +91,6 @@ Succesfully catched expected exception on duplicate keys: {"name":"SyntaxError",
 
 ```
 
-#### options.storeAsString, boolean, default false
-
-Specifies if BigInts should be stored in the object as a string, rather than the default BigNumber.
-
-Note that this is a dangerous behavior as it breaks the default functionality of being able to convert back-and-forth without data type changes (as this will convert all BigInts to be-and-stay strings).
-
-example:
-
-```js
-var JSONbig = require('json-bigint');
-var JSONbigString = require('json-bigint')({ storeAsString: true });
-var key = '{ "key": 1234567890123456789 }';
-console.log('\n\nStoring the BigInt as a string, instead of a BigNumber');
-console.log('Input:', key);
-var withInt = JSONbig.parse(key);
-var withString = JSONbigString.parse(key);
-console.log(
-  'Default type: %s, With option type: %s',
-  typeof withInt.key,
-  typeof withString.key
-);
-```
-
-Output
-
-```
-Storing the BigInt as a string, instead of a BigNumber
-Input: { "key": 1234567890123456789 }
-Default type: object, With option type: string
-
-```
-
-#### options.useNativeBigInt, boolean, default false
-
-Specifies if parser uses native BigInt instead of bignumber.js
-
-example:
-
-```js
-var JSONbig = require('json-bigint');
-var JSONbigNative = require('json-bigint')({ useNativeBigInt: true });
-var key = '{ "key": 993143214321423154315154321 }';
-console.log(`\n\nStoring the Number as native BigInt, instead of a BigNumber`);
-console.log('Input:', key);
-var normal = JSONbig.parse(key);
-var nativeBigInt = JSONbigNative.parse(key);
-console.log(
-  'Default type: %s, With option type: %s',
-  typeof normal.key,
-  typeof nativeBigInt.key
-);
-```
-
-Output
-
-```
-Storing the Number as native BigInt, instead of a BigNumber
-Input: { "key": 993143214321423154315154321 }
-Default type: object, With option type: bigint
-
-```
-
-#### options.alwaysParseAsBig, boolean, default false
-
-Specifies if all numbers should be stored as BigNumber.
-
-Note that this is a dangerous behavior as it breaks the default functionality of being able to convert back-and-forth without data type changes (as this will convert all Number to be-and-stay BigNumber)
-
-example:
-
-```js
-var JSONbig = require('json-bigint');
-var JSONbigAlways = require('json-bigint')({ alwaysParseAsBig: true });
-var key = '{ "key": 123 }'; // there is no need for BigNumber by default, but we're forcing it
-console.log(`\n\nStoring the Number as a BigNumber, instead of a Number`);
-console.log('Input:', key);
-var normal = JSONbig.parse(key);
-var always = JSONbigAlways.parse(key);
-console.log(
-  'Default type: %s, With option type: %s',
-  typeof normal.key,
-  typeof always.key
-);
-```
-
-Output
-
-```
-Storing the Number as a BigNumber, instead of a Number
-Input: { "key": 123 }
-Default type: number, With option type: object
-
-```
-
-If you want to force all numbers to be parsed as native `BigInt`
-(you probably do! Otherwise any calulations become a real headache):
-
-```js
-var JSONbig = require('json-bigint')({
-  alwaysParseAsBig: true,
-  useNativeBigInt: true,
-});
-```
-
 #### options.protoAction, boolean, default: "error". Possible values: "error", "ignore", "preserve"
 
 #### options.constructorAction, boolean, default: "error". Possible values: "error", "ignore", "preserve"
@@ -218,23 +115,3 @@ const user = JSONbig.parse('{ "__proto__": { "admin": true }, "id": 12345 }');
 - [Is there any proper way to parse JSON with large numbers? (long, bigint, int64)](http://stackoverflow.com/questions/18755125/node-js-is-there-any-proper-way-to-parse-json-with-large-numbers-long-bigint)
 - [What is JavaScript's Max Int? What's the highest Integer value a Number can go to without losing precision?](http://stackoverflow.com/questions/307179/what-is-javascripts-max-int-whats-the-highest-integer-value-a-number-can-go-t)
 - [Large numbers erroneously rounded in Javascript](http://stackoverflow.com/questions/1379934/large-numbers-erroneously-rounded-in-javascript)
-
-### Note on native BigInt support
-
-#### Stringifying
-
-Full support out-of-the-box, stringifies BigInts as pure numbers (no quotes, no `n`)
-
-#### Limitations
-
-- Roundtrip operations
-
-`s === JSONbig.stringify(JSONbig.parse(s))` but
-
-`o !== JSONbig.parse(JSONbig.stringify(o))`
-
-when `o` has a value with something like `123n`.
-
-`JSONbig` stringify `123n` as `123`, which becomes `number` (aka `123` not `123n`) by default when being reparsed.
-
-There is currently no consistent way to deal with this issue, so we decided to leave it, handling this specific case is then up to users.
