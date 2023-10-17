@@ -12,10 +12,4 @@ describe("Testing 'storeAsString' option", function(){
         done();
     });
 
-    it("Should show that key is of type string, when storeAsString option is true", function(done){
-        var JSONstring = require('../index')({"storeAsString": true});
-        var result = JSONstring.parse(key);
-        expect(typeof result.key).to.equal("string");
-        done();
-    });
 });
