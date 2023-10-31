@@ -12,7 +12,7 @@ describe("Testing native BigInt support: stringify", function () {
     var JSONbig = require('../index');
     var obj = {
       // We cannot use n-literals - otherwise older NodeJS versions fail on this test
-      big: eval("123456789012345678901234567890n"),
+      big: BigInt("123456789012345678901234567890"),
       small: -42,
       bigConstructed: BigInt(1),
       smallConstructed: Number(2),
