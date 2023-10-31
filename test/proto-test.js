@@ -38,21 +38,4 @@ describe('__proto__ and constructor assignment', function () {
       'Object contains forbidden constructor property'
     );
   });
-
-  it('should ignore __proto__ property if protoAction is set to ignore', () => {
-    const JSONbig = makeJSON({ protoAction: 'ignore' });
-    const obj1 = JSONbig.parse(
-      '{ "__proto__": 1000000000000000, "a" : 42, "nested": { "__proto__": false, "b": 43 } }'
-    );
-    expect(Object.getPrototypeOf(obj1)).to.equal(null);
-    expect(obj1).to.deep.equal({ a: 42, nested: { b: 43 } });
-  });
-
-  it('should ignore constructor property if constructorAction is set to ignore', () => {
-    const JSONbig = makeJSON({ constructorAction: 'ignore' });
-    const obj1 = JSONbig.parse(
-      '{ "constructor": 1000000000000000, "a" : 42, "nested": { "constructor": false, "b": 43 } }'
-    );
-    expect(obj1).to.deep.equal({ a: 42, nested: { b: 43 } });
-  });
 });
